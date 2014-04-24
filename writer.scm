@@ -5,6 +5,8 @@
 ;;; relocation-list (address ...)
 ;;; symbol-table    ()
 
+(define word-size 4)
+
 (define (make-address-space)
   (list (make-u8vector 30 0) 0 '() '()))
 
@@ -16,6 +18,7 @@
 (define (as-put as obj)
   (cond ((integer? obj) (as-put-integer as obj))
 	((pair?    obj) (as-put-pair    as obj))
+	((string?  obj) (as-put-string  as obj))
 	((null?    obj) (as-put-null    as obj))
 	(else (errorf "cannot as-put object ~a" obj))))
 
@@ -30,6 +33,12 @@
     (as-word-set! as (+ 4 addr) b)
     (logior addr 1)))
 
+(define (as-put-string as str)
+  (let1 addr (as-allocate as (+ word-size (string-length str)))
+    (as-word-set! as addr (string-length str))
+    (as-u8vector-copy! as (+ word-size addr) (string->u8vector str))
+    addr))
+
 (define (as-put-null as num)
   #x0f)
 
@@ -42,11 +51,13 @@
 			     (quotient value (* 256 256))
 			     (quotient value 256)
 			     value)))
+(define (as-u8vector-copy! as address uv)
+  (u8vector-copy! (car as) address uv))
 
 (define (write-address-space as out)
   (write-block (car as) out 0 (cadr as)))
 
-(call-with-output-file "a.sobj"
+#;(call-with-output-file "a.sobj"
   (lambda (out)
     (let1 as (make-address-space)
       (as-put as (list 1 2))
