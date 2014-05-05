@@ -11,8 +11,14 @@
   (list (make-u8vector 256 0) 0 '() '()))
 
 (define (as-allocate as size)
+  (define (round-up-to-8 num)
+    (let1 r (remainder num 8)
+      (if (= r 0)
+	  num
+	  (+ num (- 8 r)))))
+
   (let* ((address (cadr as))
-	 (next    (+ address size (- 8 (remainder size 8)))))
+	 (next    (+ address (round-up-to-8 size))))
     (let1 alloc (u8vector-length (car as))
       (if (> next alloc)
 	  (begin
@@ -78,6 +84,7 @@
 			     (quotient value (* 256 256))
 			     (quotient value 256)
 			     value)))
+
 (define (as-u8vector-copy! as address uv)
   (u8vector-copy! (car as) address uv))
 
