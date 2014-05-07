@@ -9,6 +9,14 @@
 (define (assemble-a-instruction line)
   (case (car line)
     ((RET) #x00000004)
+
+    ((LOADI) (let1 num (cadr line)
+	       (unless (integer? num)
+		 (errorf "y must be an integer: ~a" line))
+	       (unless (= (remainder num 8) 0)
+		 (errorf "y must be a multiple of 8: ~a" line))
+	       num))
+
     (else (error "unknown instruction"))))
 
 (define (instruction->u8vector insn)
@@ -30,7 +38,8 @@
       bytes)))
   
 (define (make-empty-closure)
-  (list (assemble '((RET)))
+  (list (assemble '((LOADI 8)
+		    (RET)))
 	#()
 	'()))
 
