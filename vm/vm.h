@@ -11,6 +11,7 @@ struct vm;
 
 struct mem *mem_new(void);
 void mem_free(struct mem *);
+vaddr_t mem_allocate(struct mem *, word_t);
 word_t mem_fetch(struct mem *, vaddr_t);
 int mem_load(struct mem *, const char *, vaddr_t *);
 void *mem_sval_to_ptr(struct mem *, sval_t, unsigned int);

@@ -10,7 +10,16 @@
 struct mem {
 	unsigned char *base;
 	unsigned int size;
+	vaddr_t allocated;
 };
+
+static vaddr_t addr_roundup(vaddr_t);
+
+static vaddr_t
+addr_roundup(vaddr_t addr)
+{
+	return (addr + (WORDSIZE * 2 - 1)) & ~(WORDSIZE * 2 - 1);
+}
 
 struct mem *
 mem_new(void)
@@ -35,6 +44,16 @@ mem_free(struct mem *mem)
 {
 	free(mem->base);
 	free(mem);
+}
+
+vaddr_t
+mem_allocate(struct mem *mem, word_t size)
+{
+	vaddr_t addr;
+
+	addr = mem->allcated;
+	mem->allcated += addr_roundup(size);
+	return addr;
 }
 
 word_t
@@ -66,6 +85,8 @@ mem_load(struct mem *mem, const char *filename, vaddr_t *addr)
 	if (ferror(fp))
 		err(1, "fread");
 	fclose(fp);
+
+	mem->allocated = addr_roundup(n);
 
 	*addr = 0;
 	return 0;
