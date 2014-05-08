@@ -65,14 +65,27 @@ gen_write_string(const char *str)
 void
 gen_write(struct vm *vm, sval_t sval)
 {
+	sval_t cdr;
 	char buf[80];
 
 	switch (gen_sval_type(vm, sval)) {
 	case SVAL_TYPE_PAIR:
 		gen_write_string("(");
 		gen_write(vm, sval_pair_car(vm, sval));
-		gen_write_string(" . ");
-		gen_write(vm, sval_pair_cdr(vm, sval));
+
+		cdr = sval_pair_cdr(vm, sval);
+		while (sval_pair_p(vm, cdr)) {
+			sval = cdr;
+			gen_write_string(" ");
+			gen_write(vm, sval_pair_car(vm, sval));
+			cdr = sval_pair_cdr(vm, sval);
+		}
+
+		if (! sval_nil_p(vm, cdr)) {
+			gen_write_string(" . ");
+			gen_write(vm, cdr);
+		}
+
 		gen_write_string(")");
 		break;
 	case SVAL_TYPE_VECTOR:

@@ -48,13 +48,17 @@ void vcpu_run(struct vm *, vaddr_t);
 struct vm *vm_new(void);
 int vm_run(struct vm *, const char *);
 
+int sval_nil_p(struct vm *, vaddr_t);
+
 sval_t sval_ptr_to_pair(struct vm *, vaddr_t);
 sval_t sval_pair_car(struct vm *, sval_t);
 sval_t sval_pair_cdr(struct vm *, sval_t);
+int sval_pair_p(struct vm *, sval_t);
 void sval_set_car_b(struct vm *, sval_t, sval_t);
 void sval_set_cdr_b(struct vm *, sval_t, sval_t);
 
 vaddr_t sval_bytevector_vaddr(struct vm *, sval_t);
 
 
+int gen_sval_type(struct vm *, sval_t);
 void gen_write(struct vm *, sval_t);

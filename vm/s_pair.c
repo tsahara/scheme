@@ -19,6 +19,12 @@ sval_pair_cdr(struct vm *vm, sval_t val)
 void sval_set_car_b(struct vm *, sval_t, sval_t);
 void sval_set_cdr_b(struct vm *, sval_t, sval_t);
 
+int
+sval_pair_p(struct vm *vm, sval_t sval)
+{
+	return gen_sval_type(vm, sval) == SVAL_TYPE_PAIR;
+}
+
 sval_t
 sval_ptr_to_pair(struct vm *vm, vaddr_t addr)
 {
