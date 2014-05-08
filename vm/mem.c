@@ -51,20 +51,20 @@ mem_allocate(struct mem *mem, word_t size)
 {
 	vaddr_t addr;
 
-	addr = mem->allcated;
-	mem->allcated += addr_roundup(size);
+	addr = mem->allocated;
+	mem->allocated += addr_roundup(size);
 	return addr;
 }
 
 word_t
-mem_fetch(struct mem *mem, vaddr_t addr)
+mem_fetch(struct vm *vm, vaddr_t addr)
 {
 	word_t w;
 	unsigned char *cp;
 
 	if ((addr % WORDSIZE) != 0)
 		err(1, "unaligned access: %0*x", WORDSIZE * 2, addr);
-	cp = mem->base + addr;
+	cp = vm->mem->base + addr;
 	w = cp[0];
 	w = (w << 8) + cp[1];
 	w = (w << 8) + cp[2];
@@ -93,14 +93,14 @@ mem_load(struct mem *mem, const char *filename, vaddr_t *addr)
 }
 
 void *
-mem_sval_to_ptr(struct mem *mem, sval_t val, unsigned int offset)
+mem_sval_to_ptr(struct vm *vm, sval_t val, unsigned int offset)
 {
-	vaddr_t addr = mem_sval_to_vaddr(mem, val, offset);
-	return &mem->base[addr];
+	vaddr_t addr = mem_sval_to_vaddr(vm, val, offset);
+	return &vm->mem->base[addr];
 }
 
 vaddr_t
-mem_sval_to_vaddr(struct mem *mem, sval_t val, unsigned int offset)
+mem_sval_to_vaddr(struct vm *vm, sval_t val, unsigned int offset)
 {
 	return  (val & ~(WORDSIZE * 2 - 1)) + offset;
 }

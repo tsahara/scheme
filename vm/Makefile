@@ -1,5 +1,5 @@
-SRCS=main.c mem.c s_bytevector.c s_pair.c vcpu.c vm.c
-OBJS=main.o mem.o s_bytevector.o s_pair.o vcpu.o vm.o
+SRCS=gen.c main.c mem.c s_bytevector.c s_pair.c vcpu.c vm.c
+OBJS=gen.o main.o mem.o s_bytevector.o s_pair.o vcpu.o vm.o
 PROG=vm
 
 CFLAGS= -g -O -Wall -Werror

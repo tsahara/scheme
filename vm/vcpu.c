@@ -5,7 +5,7 @@
 #include "vm.h"
 
 struct vcpu {
-	struct mem *mem;
+	struct vm *vm;
 
 	word_t regs[16];
 };
@@ -16,38 +16,38 @@ struct vcpu {
 #define regs_ip regs[15]
 
 struct vcpu *
-vcpu_new(struct mem *mem)
+vcpu_new(struct vm *vm)
 {
 	struct vcpu *vcpu;
 
 	vcpu = calloc(1, sizeof(struct vcpu));
 	if (vcpu == NULL)
 		return NULL;
-	vcpu->mem = mem;
+	vcpu->vm = vm;
 	return vcpu;
 }
 
 void
 vcpu_free(struct vcpu *vcpu)
 {
-	vcpu->mem = NULL;
+	vcpu->vm = NULL;
 	free(vcpu);
 }
 
 void
-vcpu_run(struct vcpu *vcpu, vaddr_t entry)
+vcpu_run(struct vm *vm, vaddr_t entry)
 {
 	word_t insn;
 
-	vcpu->regs_ip = entry;
+	vm->vcpu->regs_ip = entry;
 
 	while (1) {
-		insn = mem_fetch(vcpu->mem, vcpu->regs_ip);
-		vcpu->regs_ip += WORDSIZE;
+		insn = mem_fetch(vm, vm->vcpu->regs_ip);
+		vm->vcpu->regs_ip += WORDSIZE;
 
 		switch (insn) {
 		case 0x00000004: /* RET */
-			if (vcpu->regs_sp == 0) {
+			if (vm->vcpu->regs_sp == 0) {
 				warnx("RET from vcpu_run");
 				return;
 			}
