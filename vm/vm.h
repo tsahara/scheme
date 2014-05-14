@@ -33,6 +33,9 @@ struct vm {
 	struct mem *mem;
 };
 
+/* environment */
+sval_t env_global(struct vm *);
+
 struct mem *mem_new(void);
 void mem_free(struct mem *);
 vaddr_t mem_allocate(struct mem *, word_t);
@@ -48,6 +51,7 @@ void vcpu_run(struct vm *, vaddr_t);
 struct vm *vm_new(void);
 int vm_run(struct vm *, const char *);
 
+sval_t sval_nil(struct vm *);
 int sval_nil_p(struct vm *, vaddr_t);
 
 sval_t sval_ptr_to_pair(struct vm *, vaddr_t);

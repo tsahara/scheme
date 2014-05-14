@@ -42,8 +42,10 @@ vm_free(struct vm *vm)
 int
 vm_run(struct vm *vm, const char *filename)
 {
-	sval_t sbc, spair;
+	sval_t env, sbc, spair;
 	vaddr_t addr, addr2;
+
+	env = env_global(vm);
 
 	mem_load(vm->mem, filename, &addr);
 	spair = sval_ptr_to_pair(vm, addr);
