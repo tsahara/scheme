@@ -1,3 +1,5 @@
-*.sobj
 *.o
+*.sobj
+*.swp
+.DS_Store
 /vm/vm
