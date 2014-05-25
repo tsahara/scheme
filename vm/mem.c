@@ -47,12 +47,12 @@ mem_free(struct mem *mem)
 }
 
 vaddr_t
-mem_allocate(struct mem *mem, word_t size)
+mem_allocate(struct vm *vm, word_t size)
 {
 	vaddr_t addr;
 
-	addr = mem->allocated;
-	mem->allocated += addr_roundup(size);
+	addr = vm->mem->allocated;
+	vm->mem->allocated += addr_roundup(size);
 	return addr;
 }
 
@@ -90,6 +90,22 @@ mem_load(struct mem *mem, const char *filename, vaddr_t *addr)
 
 	*addr = 0;
 	return 0;
+}
+
+void
+mem_store(struct vm *vm, vaddr_t addr, word_t val)
+{
+	unsigned char *cp;
+
+	if ((addr % WORDSIZE) != 0) {
+		warnx("unaligned access: %0*x", WORDSIZE * 2, addr);
+		abort();
+	}
+	cp = vm->mem->base + addr;
+	cp[0] = val >> 24;
+	cp[1] = val >> 16;
+	cp[2] = val >> 8;
+	cp[3] = val;
 }
 
 void *
