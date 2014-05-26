@@ -34,9 +34,12 @@
   (cond ((integer?  obj) (as-put-integer    as obj))
 	((pair?     obj) (as-put-pair       as obj))
 	((string?   obj) (as-put-string     as obj))
+	((symbol?   obj) (as-put-symbol     as obj))
 	((vector?   obj) (as-put-vector     as obj))
 	((u8vector? obj) (as-put-bytevector as obj))
 	((null?     obj) (as-put-null       as obj))
+	((eq? #t    obj) (as-put-true       as obj))
+	((eq? #f    obj) (as-put-false      as obj))
 	(else (errorf "cannot as-put object ~a" obj))))
 
 (define (as-put-integer as num)
@@ -56,6 +59,14 @@
     (as-u8vector-copy! as (+ word-size addr) (string->u8vector str))
     (logior addr 2)))
 
+(define (as-put-symbol as sym)
+  (let* ((str  (symbol->string sym))
+	 (len  (string-length str))
+	 (addr (as-allocate as (+ word-size len))))
+    (as-word-set! as addr len)
+    (as-u8vector-copy! as (+ word-size addr) (string->u8vector str))
+    (logior addr 3)))
+
 (define (as-put-vector as vec)
   (let1 addr (as-allocate as (* (+ 1 (vector-length vec)) word-size))
     (as-word-set! as addr (vector-length vec))
@@ -74,6 +85,13 @@
 
 (define (as-put-null as num)
   #x0f)
+
+(define (as-put-true as num)
+  #x1f)
+
+(define (as-put-false as num)
+  #x2f)
+
 
 (define (as-word-set! as address value)
   (for-each-with-index (lambda (i byte)
