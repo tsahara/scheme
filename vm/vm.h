@@ -25,6 +25,14 @@ enum {
 };
 #define SVAL_TYPE_MAX SVAL_TYPE_UNKNOWN
 
+enum {
+	SVAL_TAG_CPROC = 1,
+	SVAL_TAG_BYTEVECTOR,
+	SVAL_TAG_UNKNOWN
+};
+#define SVAL_TAG_MAX SVAL_TAG_UNKNOWN
+
+
 struct mem;
 struct vcpu;
 
@@ -51,6 +59,10 @@ void vcpu_run(struct vm *, vaddr_t);
 
 struct vm *vm_new(void);
 int vm_run(struct vm *, const char *);
+
+word_t sval_tag_get(struct vm *, sval_t);
+
+word_t sval_fixnum_to_num(struct vm *, sval_t);
 
 sval_t sval_nil(struct vm *);
 int sval_nil_p(struct vm *, vaddr_t);
