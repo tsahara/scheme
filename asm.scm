@@ -35,7 +35,8 @@
     (list (assemble '((LOADI 0)
 		      (RET)))
 	  #()
-	  `((sym-write 0)))))
+	  `((,sym-write 0))
+	  )))
 
 (default-endian 'big-endian)
 (call-with-output-file "a.sobj"

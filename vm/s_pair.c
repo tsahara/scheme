@@ -11,7 +11,7 @@ sval_pair(struct vm *vm, sval_t car, sval_t cdr)
 	addr = mem_allocate(vm, WORDSIZE * 2);
 	pair = addr | 1;
 	sval_pair_set_car_b(vm, pair, car);
-	sval_pair_set_cdr_b(vm, pair, car);
+	sval_pair_set_cdr_b(vm, pair, cdr);
 	return pair;
 }
 

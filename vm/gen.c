@@ -1,3 +1,4 @@
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -119,6 +120,9 @@ gen_write(struct vm *vm, sval_t sval)
 	{
 		word_t tag = sval_tag_get(vm, sval);
 		switch (tag) {
+		case SVAL_TAG_CPROC:
+			gen_write_string("#<an cproc>");
+			break;
 		case SVAL_TAG_BYTEVECTOR:
 			gen_write_string("#u8(");
 			gen_write_string("...");

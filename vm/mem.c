@@ -108,6 +108,12 @@ mem_store(struct vm *vm, vaddr_t addr, word_t val)
 	cp[3] = val;
 }
 
+word_t
+mem_sval_fetch(struct vm *vm, sval_t sval, unsigned int offset)
+{
+	return mem_fetch(vm, mem_sval_to_vaddr(vm, sval, offset));
+}
+
 void *
 mem_sval_to_ptr(struct vm *vm, sval_t val, unsigned int offset)
 {
@@ -120,3 +126,10 @@ mem_sval_to_vaddr(struct vm *vm, sval_t val, unsigned int offset)
 {
 	return  (val & ~(WORDSIZE * 2 - 1)) + offset;
 }
+
+void *
+mem_vaddr_to_ptr(struct vm *vm, vaddr_t vaddr, unsigned int offset)
+{
+	return &vm->mem->base[vaddr + offset];
+}
+

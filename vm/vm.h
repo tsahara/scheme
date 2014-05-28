@@ -5,6 +5,7 @@ typedef word_t sval_t;		/* scheme value */
 typedef word_t vaddr_t;		/* address in memory */
 
 #define WORDSIZE	4
+#define WORDWRAP(x)	(((x) + 3) & ~(WORDSIZE - 1))
 
 enum {
 	SVAL_TYPE_FIXNUM = 0,
@@ -42,7 +43,9 @@ struct vm {
 };
 
 /* environment */
+sval_t env_add(struct vm *, sval_t, sval_t, sval_t);
 sval_t env_global(struct vm *);
+sval_t env_lookup(struct vm *, sval_t, sval_t);
 
 struct mem *mem_new(void);
 void mem_free(struct mem *);
@@ -50,8 +53,10 @@ vaddr_t mem_allocate(struct vm *, word_t);
 word_t mem_fetch(struct vm *, vaddr_t);
 int mem_load(struct mem *, const char *, vaddr_t *);
 void mem_store(struct vm *, vaddr_t, word_t);
+word_t mem_sval_fetch(struct vm *, sval_t, unsigned int);
 void *mem_sval_to_ptr(struct vm *, sval_t, unsigned int);
 vaddr_t mem_sval_to_vaddr(struct vm *, sval_t, unsigned int);
+void *mem_vaddr_to_ptr(struct vm *, vaddr_t, unsigned int);
 
 struct vcpu *vcpu_new(struct vm *);
 void vcpu_free(struct vcpu *);
@@ -60,7 +65,11 @@ void vcpu_run(struct vm *, vaddr_t);
 struct vm *vm_new(void);
 int vm_run(struct vm *, const char *);
 
+
 word_t sval_tag_get(struct vm *, sval_t);
+
+/* cproc */
+sval_t sval_cproc_new(struct vm *, void *);
 
 word_t sval_fixnum_to_num(struct vm *, sval_t);
 
@@ -77,6 +86,8 @@ void sval_pair_set_cdr_b(struct vm *, sval_t, sval_t);
 
 vaddr_t sval_bytevector_vaddr(struct vm *, sval_t);
 
+/* symbol */
+sval_t sval_symbol(struct vm *, const char *);
 
 int gen_sval_type(struct vm *, sval_t);
 void gen_write(struct vm *, sval_t);
