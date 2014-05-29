@@ -1,5 +1,6 @@
 *.o
 *.sobj
 *.swp
+*.xcodeproj
 .DS_Store
 /vm/vm
