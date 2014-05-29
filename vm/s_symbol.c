@@ -36,3 +36,9 @@ sval_symbol(struct vm *vm, const char *name)
 	allsymbols[i] = sym;
 	return sym;
 }
+
+int
+sval_symbol_p(struct vm *vm, sval_t sval)
+{
+	return gen_sval_type(vm, sval) == SVAL_TYPE_SYMBOL;
+}

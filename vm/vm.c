@@ -5,6 +5,16 @@
 
 #include "vm.h"
 
+static sval_t
+relocate_file_to_vm(struct vm *vm, vaddr_t fileptr, word_t fileobj)
+{
+	if (sval_symbol_p(vm, fileptr + fileobj)) {
+		sval_symbol
+	} else {
+		errx(1, "relocate_file_to_vm: notyet");
+	}
+}
+
 static void
 relocate(struct vm *vm, vaddr_t fileptr, sval_t closure, sval_t env)
 {
@@ -14,9 +24,16 @@ relocate(struct vm *vm, vaddr_t fileptr, sval_t closure, sval_t env)
 	reftab = sval_pair_car(vm, sval_pair_cdr(vm, sval_pair_cdr(vm, closure)));
 
 	for (l = reftab; sval_pair_p(vm, l); l = sval_pair_cdr(vm, l)) {
+
+		/* entry = (symptr addr0 addr1 ...) */
 		entry = sval_pair_car(vm, l);
-		sym = sval_pair_car(vm, entry);
+
+		symptr = sval_pair_car(vm, entry);
+		
+		relocate_file_to_vm(vm, fileptr, symptr);
+
 		addrl = sval_pair_cdr(vm, entry);
+		printf("sym:");
 		gen_write(vm, sym);
 		addr = sval_pair_car(vm, addrl);
 		printf(" @%x\n", addr);

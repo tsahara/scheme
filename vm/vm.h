@@ -88,6 +88,7 @@ vaddr_t sval_bytevector_vaddr(struct vm *, sval_t);
 
 /* symbol */
 sval_t sval_symbol(struct vm *, const char *);
+int sval_symbol_p(struct vm *, sval_t);
 
 int gen_sval_type(struct vm *, sval_t);
 void gen_write(struct vm *, sval_t);
