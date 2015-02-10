@@ -29,14 +29,16 @@
 					(instruction->u8vector insn)))
 		      insn-list)
       bytes)))
-  
+
+;; (write 123)
+
 (define (make-empty-closure as)
   (let1 sym-write (as-put as 'write)
-    (list (assemble '((LOADI 0)
-		      (RET)))
-	  #()
-	  `((,sym-write 0))
-	  )))
+    #((assemble '((LOADI 0)
+		  (RET)))
+      #()
+      `((,sym-write 0))
+      )))
 
 (default-endian 'big-endian)
 (call-with-output-file "a.sobj"
