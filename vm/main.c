@@ -35,7 +35,6 @@ main(int argc, char **argv)
 		usage();
 		exit(1);
 	}
-
 	vm = vm_new();
 	if (vm == NULL)
 		err(1, "cannot create an address space");

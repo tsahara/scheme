@@ -51,7 +51,7 @@ struct mem *mem_new(void);
 void mem_free(struct mem *);
 vaddr_t mem_allocate(struct vm *, word_t);
 word_t mem_fetch(struct vm *, vaddr_t);
-int mem_load(struct mem *, const char *, vaddr_t *);
+int mem_load(struct vm *, const char *, vaddr_t *);
 void mem_store(struct vm *, vaddr_t, word_t);
 word_t mem_sval_fetch(struct vm *, sval_t, unsigned int);
 void *mem_sval_to_ptr(struct vm *, sval_t, unsigned int);
@@ -87,7 +87,8 @@ void sval_pair_set_cdr_b(struct vm *, sval_t, sval_t);
 vaddr_t sval_bytevector_vaddr(struct vm *, sval_t);
 
 /* symbol */
-sval_t sval_symbol(struct vm *, const char *);
+sval_t sval_symbol(struct vm *, const char *, word_t);
+sval_t sval_symbol_cstr(struct vm *, const char *);
 int sval_symbol_p(struct vm *, sval_t);
 
 int gen_sval_type(struct vm *, sval_t);

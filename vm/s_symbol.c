@@ -12,15 +12,14 @@ sval_symbol_length(struct vm *vm, sval_t sym)
 }
 
 sval_t
-sval_symbol(struct vm *vm, const char *name)
+sval_symbol(struct vm *vm, const char *name, word_t namelen)
 {
 	sval_t sym;
 	vaddr_t vaddr;
-	word_t len, namelen;
+	word_t len;
 	int i;
 	char *cp;
 
-	namelen = strlen(name);
 	for (i = 0; allsymbols[i] != 0; i++) {
 		sym = allsymbols[i];
 		len = sval_symbol_length(vm, sym);
@@ -35,6 +34,13 @@ sval_symbol(struct vm *vm, const char *name)
 	sym = vaddr | 0x03;
 	allsymbols[i] = sym;
 	return sym;
+}
+
+
+sval_t
+sval_symbol_cstr(struct vm *vm, const char *name)
+{
+	return sval_symbol(vm, name, strlen(name));
 }
 
 int

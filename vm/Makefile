@@ -10,7 +10,7 @@ LDFLAGS=
 .c.o:
 	$(CC) -c $(CFLAGS) -I. -o $@ $<
 
-all: $(PROG)
+all: $(PROG) tags
 
 $(OBJS): vm.h
 
@@ -19,6 +19,9 @@ $(PROG): $(OBJS)
 
 clean:
 	-rm -f $(OBJS) $(PROG)
+
+tags: $(SRCS)
+	ctags $(SRCS)
 
 .PHONY: check-syntax
 check-syntax:

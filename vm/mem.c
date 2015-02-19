@@ -33,6 +33,7 @@ mem_new(void)
 	if (mem->base == NULL)
 		goto eret;
 	mem->size = ALLOC_SIZE;
+	mem->allocated = 0;
 	return mem;
 eret:
 	free(mem);
@@ -73,22 +74,28 @@ mem_fetch(struct vm *vm, vaddr_t addr)
 }
 
 int
-mem_load(struct mem *mem, const char *filename, vaddr_t *addr)
+mem_load(struct vm *vm, const char *filename, vaddr_t *addrp)
 {
 	FILE *fp;
 	size_t n;
+	vaddr_t addr;
+	long filesize;
 
 	fp = fopen(filename, "r");
 	if (fp == NULL)
 		err(1, "%s", filename);
-	n = fread(mem->base, 1, mem->size, fp);
+
+	fseek(fp, 0, SEEK_END);
+	filesize = ftell(fp);
+	rewind(fp);
+
+	addr = mem_allocate(vm, filesize);
+	n = fread(vm->mem->base + addr, 1, filesize, fp);
 	if (ferror(fp))
 		err(1, "fread");
 	fclose(fp);
 
-	mem->allocated = addr_roundup(n);
-
-	*addr = 0;
+	*addrp = addr;
 	return 0;
 }
 
