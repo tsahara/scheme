@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "vm.h"
+#include "mem.h"
 
 #if 0
 static sval_t
@@ -27,7 +28,7 @@ relocate(struct vm *vm, vaddr_t fileptr, sval_t env)
 {
 	vaddr_t a;
 	word_t w;
-	
+
 	a = fileptr + WORDSIZE;
 	w = mem_fetch(vm, a);
 	warnx("w=0x%x", w);
@@ -52,7 +53,7 @@ relocate(struct vm *vm, vaddr_t fileptr, sval_t env)
 		gen_write(vm, sym);
 		addr = sval_pair_car(vm, addrl);
 		printf(" @%x\n", addr);
-		
+
 		//env_lookup(vm, env, entry)
 		printf("\n");
 	}

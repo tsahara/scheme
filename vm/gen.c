@@ -3,13 +3,14 @@
 #include <stdlib.h>
 
 #include "vm.h"
+#include "mem.h"
 
 int
 gen_sval_type(struct vm *vm, sval_t sval)
 {
 	sval_t tag;
 	int t;
-	
+
 	t = sval & 7;
 	if (t < 6)
 		return t;

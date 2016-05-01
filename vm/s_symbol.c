@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "vm.h"
+#include "mem.h"
 
 sval_t allsymbols[1000];
 

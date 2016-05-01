@@ -1,4 +1,5 @@
 #include "vm.h"
+#include "mem.h"
 
 sval_t
 sval_cproc_new(struct vm *vm, void *proc)

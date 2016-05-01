@@ -1,4 +1,5 @@
 #include "vm.h"
+#include "mem.h"
 
 vaddr_t
 sval_bytevector_vaddr(struct vm *vm, sval_t sval)

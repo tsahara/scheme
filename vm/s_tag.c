@@ -1,4 +1,6 @@
 #include "vm.h"
+#include "mem.h"
+
 
 word_t
 sval_tag_get(struct vm *vm, sval_t sval)

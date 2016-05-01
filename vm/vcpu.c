@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "vm.h"
+#include "mem.h"
 
 struct vcpu {
 	struct vm *vm;

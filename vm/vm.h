@@ -1,3 +1,6 @@
+#ifndef __VM_VM_H__
+#define __VM_VM_H__
+
 #include <stdint.h>
 
 typedef uint32_t word_t;
@@ -42,21 +45,13 @@ struct vm {
 	struct mem *mem;
 };
 
+/* closure */
+sval_t closure_new(struct vm *, void *);
+
 /* environment */
 sval_t env_add(struct vm *, sval_t, sval_t, sval_t);
 sval_t env_global(struct vm *);
 sval_t env_lookup(struct vm *, sval_t, sval_t);
-
-struct mem *mem_new(void);
-void mem_free(struct mem *);
-vaddr_t mem_allocate(struct vm *, word_t);
-word_t mem_fetch(struct vm *, vaddr_t);
-int mem_load(struct vm *, const char *, vaddr_t *);
-void mem_store(struct vm *, vaddr_t, word_t);
-word_t mem_sval_fetch(struct vm *, sval_t, unsigned int);
-void *mem_sval_to_ptr(struct vm *, sval_t, unsigned int);
-vaddr_t mem_sval_to_vaddr(struct vm *, sval_t, unsigned int);
-void *mem_vaddr_to_ptr(struct vm *, vaddr_t, unsigned int);
 
 struct vcpu *vcpu_new(struct vm *);
 void vcpu_free(struct vcpu *);
@@ -93,3 +88,5 @@ int sval_symbol_p(struct vm *, sval_t);
 
 int gen_sval_type(struct vm *, sval_t);
 void gen_write(struct vm *, sval_t);
+
+#endif /* __VM_VM_H__ */

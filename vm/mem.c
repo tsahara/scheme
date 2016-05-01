@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 #include "vm.h"
+#include "mem.h"
+
 
 #define ALLOC_SIZE	(256*1024)
 
@@ -139,4 +141,3 @@ mem_vaddr_to_ptr(struct vm *vm, vaddr_t vaddr, unsigned int offset)
 {
 	return &vm->mem->base[vaddr + offset];
 }
-

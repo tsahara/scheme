@@ -1,6 +1,8 @@
 #include <err.h>
 
 #include "vm.h"
+#include "mem.h"
+
 
 sval_t
 sval_pair(struct vm *vm, sval_t car, sval_t cdr)
@@ -54,4 +56,3 @@ sval_ptr_to_pair(struct vm *vm, vaddr_t addr)
 {
 	return addr + 1;
 }
-
