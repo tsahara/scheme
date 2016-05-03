@@ -5,6 +5,12 @@
 #include "vm.h"
 #include "mem.h"
 
+void
+gen_exit(struct vm *vm, sval_t sval)
+{
+	exit(0);
+}
+
 int
 gen_sval_type(struct vm *vm, sval_t sval)
 {

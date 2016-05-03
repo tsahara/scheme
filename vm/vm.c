@@ -105,6 +105,9 @@ vm_run(struct vm *vm, const char *filename)
 	env = env_add(vm, env,
 		      sval_symbol_cstr(vm, "write"),
 		      sval_cproc_new(vm, gen_write));
+	env = env_add(vm, env,
+		      sval_symbol_cstr(vm, "exit"),
+		      sval_cproc_new(vm, gen_exit));
 
 	mem_load(vm, filename, &addr);
 	relocate(vm, addr, env);
