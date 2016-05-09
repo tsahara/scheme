@@ -5,6 +5,7 @@
 (define (assemble-an-instruction line)
   (case (car line)
     ((ret) #x00000004)
+    ((nop) #xffffffff)
     (else (errorf "unknown instruction: ~a" (car line)))))
 
 (define (assemble code out)
