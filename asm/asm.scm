@@ -10,7 +10,7 @@
 
 (define (assemble code out)
   (for-each (lambda (line)
-	      (write-u32 (assemble-an-instruction line) out))
+	      (write-u32 (assemble-an-instruction line) out 'big-endian))
 	    code))
 
 (define (assemble-to-file code outfile)
@@ -20,11 +20,11 @@
 (begin
   (use file.util)
   (current-directory "/Users/sahara/src/scheme")
-  (let1 program '((ret))
+  (let1 program '((nop)
+		  (ret))
     (assemble-to-file program "a.sobj"))
   )
 
 (define (main args)
-  (default-endian 'big-endian)
   (assemble-to-file (port->string (open-input-file (car args)))
 		    "a.sobj"))
