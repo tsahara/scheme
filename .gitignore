@@ -1,7 +1,10 @@
 *.o
+*.s
 *.sobj
 *.swp
 *.xcodeproj
 .DS_Store
-/vm/vm
+/a.out
 /asm/a.obj
+/vm/vm
+/build/*
