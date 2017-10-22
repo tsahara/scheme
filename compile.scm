@@ -1,33 +1,44 @@
+(use gauche.parseopt)
 (use gauche.sequence)
 (use srfi-13)
 (use srfi-60)
 
-;;
-;; direct compile version
-;;
-(define (compile-scm-file0 scm-file asm-file)
-  (format #t "~a => ~a\n" scm-file asm-file)
-  (call-with-input-file scm-file
-    (lambda (in)
-      (call-with-output-file asm-file
-	(lambda (out)
-	  (format out ".globl _main\n")
-	  (format out "_main:\n")
+(define-class <scheme-program> ()
+  ((next-procedure-id :init-value 0)
+   ))
 
-	  (let ((exp (read in)))
-	    (cond ((integer? exp)
-		   (compile-integer-expression exp out))
-		  (else (error "cannot compile ~a" exp))))
-
-	  (format out "retq\n"))))))
 
 (define (integer->sval num)
   (ash num 3))
 
+;;
+;; Compile-time Environment
+;;
+(define-class <compiler-environment> ()
+  ((alist  :init-value '())
+   (parent :init-value #f)
+   ))
+
+(define (make-cenv)
+  (make <compiler-environment>))
+
+(define (cenv-add cenv symbol value)
+  (slot-set! cenv 'alist
+	     (assoc-set! (slot-ref cenv 'alist) symbol value)))
+
+(define (cenv-print cenv)
+  (format #t "Compiler Environment ~a\n" cenv)
+  (for-each (lambda (pair)
+	      (format #t "  ~a : ~a\n" (car pair) (cdr pair)))
+	    (slot-ref cenv 'alist)))
 
 ;;
-;; tac = Three Address Code
+;; Three Address Code
+;; tac := (operator val1 val2 result)
+;; operator := ...?
+;; val1, val2 := (a scheme object)
 ;;
+
 (define (scheme-exp->tac exp)
   (cond ((integer? exp)
 	 (list `(value ,exp)))))
@@ -49,8 +60,6 @@
 (define-class <tac-block> ()
   (procedure-name regs))
 
-
-
 ;;
 ;; regs
 ;;
@@ -61,22 +70,51 @@
   (values (format #f "t~a" regs) (+ 1 regs)))
 
 ;;
-;; intermediate code version
+;; Compiler Entry Point
 ;;
 (define (compile-scm-file scm-file asm-file)
   (format #t "compile: ~a => ~a\n" scm-file asm-file)
-  (call-with-input-file scm-file
-    (lambda (in)
-      (call-with-output-file asm-file
-	(lambda (out)
-	  (let ((exp  (read in))
-		(regs (make-regs)))
-	    (codegen (compile-expression-into-tac exp regs)
-		     out))
-	  )))))
+  (call-with-output-file asm-file
+    (lambda (out)
+      ;; XXX pass 1 to read all toplevel procedure definitions.
+      (call-with-input-file scm-file
+	(lambda (in)
+	  (let ((prog (make <scheme-program>))
+		(cenv (make-cenv))
+		(exp  (read in)))
+	    (unless (equal? (car exp) 'define)
+	      (error "not a (define)"))
+	    (compile-procedure prog cenv exp)
+	    )))))
 
-(define (compile-expression-into-tac exp regs)
+  (format #t "<<< ~a >>>\n" asm-file)
+  (copy-port (open-input-file asm-file) (current-output-port))
+  )
+
+(define (compile-procedure prog cenv exp)
+  (let ((decl (cadr exp))
+	(body (caddr exp))
+	(regs 0))
+    (let ((arity (- (length decl) 1)))
+      (define (reg-alloc!) (inc! regs))
+
+      (format #t "procedure: ~a\n" (car decl))
+      (format #t "args: ~a\n" (cdr decl))
+
+      ;; allcoate registers to arguments.
+      (for-each (cut cenv-add cenv <> (reg-alloc!)) (cdr decl))
+      (cenv-print cenv)
+
+      (apply append (map (lambda (exp)
+			   (compile-expression exp regs cenv))
+			 body))
+      )))
+
+(define (compile-expression exp regs)
   (cond ((integer? exp) (compile-integer-into-tac exp regs))
+	;;symbol?
+	;;string literal
+	;;
 	((pair? exp)    (compile-pair-into-tac exp regs))
 	(else (error "cannot compile ~a" exp))))
 
@@ -140,24 +178,25 @@
   (print "./a.out")
   (sys-exec "./a.out" '("./a.out")))
 
-(define (run-a-script scm-file)
-  (define (scm->asm filename)
-    (string-append (if (string-suffix? ".scm" filename)
-		       (string-drop-right filename 4)
-		       filename)
-		   ".s"))
+(define (run-a-script scm-filename)
+  (let ((asm-filename (string-append (if (string-suffix? ".scm" scm-filename)
+					 (string-drop-right scm-filename 4)
+					 scm-filename)
+				     ".s")))
+    (compile-scm-file scm-filename asm-filename)
+    #;(assemble-and-link asm-filename)
+    #;(run-aout)))
 
-  (let ((asm-file (scm->asm scm-file)))
-    (compile-scm-file scm-file asm-file)
-    (assemble-and-link asm-file)
-    (run-aout)))
-
-(define (usage)
-  (print "usage: run.scm <a.scm>"))
+(define (print-usage prog)
+  (format #t "usage: ~a <program.scm>\n" prog)
+  (exit 0))
 
 (define (main args)
-  (unless (= (length args) 2)
-	  (begin
-	    (usage)
-	    (exit 1)))
-  (run-a-script (cadr args)))
+  (let-args (cdr args)
+      ((help        "h|help")
+       . restargs)
+
+    (if help
+	(print-usage (car args)))
+
+    (run-a-script (car restargs))))
