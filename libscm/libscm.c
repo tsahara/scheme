@@ -1,4 +1,4 @@
-#include "clib.h"
+#include "libscm.h"
 
 int
 dummy(sobj_t abc)

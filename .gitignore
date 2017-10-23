@@ -2,9 +2,15 @@
 *.s
 *.sobj
 *.swp
-*.xcodeproj
 .DS_Store
 /a.out
 /asm/a.obj
 /vm/vm
 /build/*
+
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+
+libscm/libscm.a
