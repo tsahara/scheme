@@ -167,6 +167,11 @@
   (format port "movq $123, %rax\n")
   (format port "retq\n"))
 
+(define asm-gensym
+  (let ((symbol-id 0))
+    (lambda ()
+      (inc! symbol-id))))
+
 ;;
 
 (define (assemble-and-link asm-file)
