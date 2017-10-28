@@ -69,6 +69,15 @@
 (define (newregs regs)
   (values (format #f "t~a" regs) (+ 1 regs)))
 
+(define-class <compiler-procedure> ()
+  ((asm-symbol :init-form (asm-gensym))))
+
+(define (make-compiler-procedure)
+  (make <compiler-procedure>))
+
+(define (cproc-asm-symbol cproc)
+  (slot-ref cproc 'asm-symbol))
+
 ;;
 ;; Compiler Entry Point
 ;;
@@ -84,31 +93,29 @@
 		(exp  (read in)))
 	    (unless (equal? (car exp) 'define)
 	      (error "not a (define)"))
-	    (compile-procedure prog cenv exp)
+	    (compile-procedure out prog cenv exp)
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
   (copy-port (open-input-file asm-file) (current-output-port))
   )
 
-(define (compile-procedure prog cenv exp)
+(define (compile-procedure out prog cenv exp)
   (let ((decl (cadr exp))
 	(body (caddr exp))
-	(regs 0))
+	(regs 0)
+	(cproc (make-compiler-procedure)))
     (let ((arity (- (length decl) 1)))
       (define (reg-alloc!) (inc! regs))
 
       (format #t "procedure: ~a\n" (car decl))
       (format #t "args: ~a\n" (cdr decl))
 
-      ;; allcoate registers to arguments.
-      (for-each (cut cenv-add cenv <> (reg-alloc!)) (cdr decl))
-      (cenv-print cenv)
 
-      (apply append (map (lambda (exp)
-			   (compile-expression exp regs cenv))
-			 body))
-      )))
+      (cenv-add cenv (car exp) cproc)
+      (format out "~a:\n" (cproc-asm-symbol cproc)))
+      (format out "    retq\n"))
+      )
 
 (define (compile-expression exp regs)
   (cond ((integer? exp) (compile-integer-into-tac exp regs))
