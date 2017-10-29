@@ -177,7 +177,7 @@
 (define asm-gensym
   (let ((symbol-id 0))
     (lambda ()
-      (inc! symbol-id))))
+      (string-append "s_" (number->string (inc! symbol-id))))))
 
 ;;
 
