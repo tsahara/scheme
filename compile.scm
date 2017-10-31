@@ -94,6 +94,11 @@
 	    (unless (equal? (car exp) 'define)
 	      (error "not a (define)"))
 	    (compile-procedure out prog cenv exp)
+
+	    (format out ".global _main\n")
+	    (format out "_main:\n")
+	    (format out "    movq $123, %rax\n")
+	    (format out "    retq\n")
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
@@ -168,16 +173,10 @@
 ;;
 ;; codegen - Machine Code Generator
 ;;
-(define (codegen tac-list port)
-  (format port ".globl _main\n")
-  (format port "_main:\n")
-  (format port "movq $123, %rax\n")
-  (format port "retq\n"))
-
 (define asm-gensym
   (let ((symbol-id 0))
     (lambda ()
-      (string-append "s_" (number->string (inc! symbol-id))))))
+      (string-append "_s_" (number->string (inc! symbol-id))))))
 
 ;;
 
