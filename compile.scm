@@ -50,7 +50,7 @@
 	      )
 	    list-of-tac))
 
-(define (tac-result-register tac)
+(define (tac-result tac)
   ;; result register of the last tac.
   (car (last tac)))
 
@@ -63,8 +63,16 @@
 ;;
 ;; regs
 ;;
-(define (make-regs)
-  0)
+(define-class <registers> ()
+  ((index :init-value 0)))
+
+(define (make-registers)
+  (make <registers>))
+
+(define (registers-alloc regs)
+  (let ((reg (slot-ref regs 'index)))
+    (slot-set! regs 'index (+ reg 1))
+    reg))
 
 (define (newregs regs)
   (values (format #f "t~a" regs) (+ 1 regs)))
@@ -91,9 +99,11 @@
 	  (let ((prog (make <scheme-program>))
 		(cenv (make-cenv))
 		(exp  (read in)))
-	    (unless (equal? (car exp) 'define)
-	      (error "not a (define)"))
-	    (compile-procedure out prog cenv exp)
+	    (cond ((equal? (car exp) 'define)
+		   (compile-procedure out prog cenv exp))
+
+		  (else
+		   (error "not a (define)")))
 
 	    (format out ".global _main\n")
 	    (format out "_main:\n")
@@ -108,27 +118,26 @@
 (define (compile-procedure out prog cenv exp)
   (let ((decl (cadr exp))
 	(body (caddr exp))
-	(regs 0)
+	(regs (make-registers))
 	(cproc (make-compiler-procedure)))
     (let ((arity (- (length decl) 1)))
       (define (reg-alloc!) (inc! regs))
 
       (format #t "procedure: ~a\n" (car decl))
       (format #t "args: ~a\n" (cdr decl))
-
-
       (cenv-add cenv (car exp) cproc)
-      (format out "~a:\n" (cproc-asm-symbol cproc)))
-      (format out "    retq\n"))
-      )
+
+      (let ((last-tac (compile-expression body regs)))
+	;; register allocation?
+	;; (target-code-generate tac)
+
+	(format out "~a:\n" (cproc-asm-symbol cproc))
+	;; movq (register-tac-to-target (tac-result last-tac)), %rax
+	(format out "    retq\n")))
+    ))
 
 (define (compile-expression exp regs)
-  (cond ((integer? exp) (compile-integer-into-tac exp regs))
-	;;symbol?
-	;;string literal
-	;;
-	((pair? exp)    (compile-pair-into-tac exp regs))
-	(else (error "cannot compile ~a" exp))))
+  (values `(add ,(registers-alloc regs) 1 2)))
 
 (define (compile-integer-expression)
   (format out "movq $~d, %rax\n"
