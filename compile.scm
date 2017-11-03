@@ -86,6 +86,10 @@
 (define (cproc-asm-symbol cproc)
   (slot-ref cproc 'asm-symbol))
 
+;; Temporary Variable
+(define (temporary-variable-alloc vars)
+  )
+
 ;;
 ;; Compiler Entry Point
 ;;
