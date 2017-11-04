@@ -141,7 +141,22 @@
     ))
 
 (define (compile-expression exp regs)
-  (values `(add ,(registers-alloc regs) 1 2)))
+  (case (car exp)
+    ;; (if c t f)
+    ((if) (let ((tb-cond  (compile-expression c))
+		(tb-true  (compile-expression t))
+		(tb-false (compile-expression f))
+		(t1       (new-tmp))
+		(l1       (new-label))
+		(l2       (new-label)))
+	    (emit 'jmpf l1 (tac-block-value tb-cond))
+	    (tac-append tb-true)
+	    (emit 'jmp l2)
+	    (tac-append-with-label tb-false l1)
+	    (label l2)
+	    ))
+
+    (else (values `(add ,(registers-alloc regs) 1 2)))))
 
 (define (compile-integer-expression)
   (format out "movq $~d, %rax\n"
