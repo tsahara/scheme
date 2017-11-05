@@ -58,7 +58,11 @@
 ;; tac-block
 ;;
 (define-class <tac-block> ()
-  (procedure-name regs))
+  ((arity)
+   (env)
+   (procedure-name)
+   (regs)
+   ))
 
 ;;
 ;; regs
@@ -156,6 +160,7 @@
 	    (label l2)
 	    ))
 
+    ;; (proc a b c ...)
     (else (values `(add ,(registers-alloc regs) 1 2)))))
 
 (define (compile-integer-expression)
