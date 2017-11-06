@@ -2,6 +2,7 @@
 (use gauche.sequence)
 (use srfi-13)
 (use srfi-60)
+(use srfi-117)
 
 (define-class <scheme-program> ()
   ((next-procedure-id :init-value 0)
@@ -81,14 +82,22 @@
 (define (newregs regs)
   (values (format #f "t~a" regs) (+ 1 regs)))
 
+;;
+;; A Procedure in Compiler
+;;
 (define-class <compiler-procedure> ()
-  ((asm-symbol :init-form (asm-gensym))))
+  ((asm-symbol :init-form (asm-gensym))
+   (tac-block  :init-form (make-list-queue '()))))
 
 (define (make-compiler-procedure)
   (make <compiler-procedure>))
 
 (define (cproc-asm-symbol cproc)
   (slot-ref cproc 'asm-symbol))
+
+(define (cproc-add-tac cproc tac)
+
+  )
 
 ;; Temporary Variable
 (define (temporary-variable-alloc vars)
@@ -135,14 +144,12 @@
       (format #t "args: ~a\n" (cdr decl))
       (cenv-add cenv (car exp) cproc)
 
-      (let ((last-tac (compile-expression body regs)))
-	;; register allocation?
-	;; (target-code-generate tac)
+      (cproc-add-tac cproc (compile-expression body regs))
 
-	(format out "~a:\n" (cproc-asm-symbol cproc))
-	;; movq (register-tac-to-target (tac-result last-tac)), %rax
-	(format out "    retq\n")))
-    ))
+      (format out "~a:\n" (cproc-asm-symbol cproc))
+      ;; movq (register-tac-to-target (tac-result last-tac)), %rax
+      (format out "    retq\n")))
+  )
 
 (define (compile-expression exp regs)
   (case (car exp)
