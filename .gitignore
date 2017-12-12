@@ -1,16 +1,11 @@
 *.o
 *.s
 *.sobj
-*.swp
-.DS_Store
+
 /a.out
 /asm/a.obj
-/vm/vm
-/build/*
-
-CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
 
 libscm/libscm.a
+
+*.swp
+.DS_Store
