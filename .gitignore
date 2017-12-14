@@ -5,6 +5,7 @@
 /a.out
 /asm/a.obj
 
+libscm/a.out
 libscm/libscm.a
 
 *.swp
