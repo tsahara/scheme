@@ -1,5 +1,5 @@
-SRCS=fixnum.c string.c
-OBJS=fixnum.o string.o
+SRCS=fixnum.c init.c string.c
+OBJS=fixnum.o init.o string.o
 
 CPPFLAGS=-Wall
 

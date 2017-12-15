@@ -22,4 +22,7 @@ typedef intptr_t scm_obj_t;
 #define SCM_OBJ_FALSE		0x0e
 #define SCM_OBJ_UNSPECIFIED	0x0f
 
+
+void scm_init(void);
+
 #include "fixnum.h"

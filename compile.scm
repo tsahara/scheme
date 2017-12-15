@@ -124,7 +124,10 @@
 
 	    (format out ".global _main\n")
 	    (format out "_main:\n")
+	    (format out "    pushq %rbp\n")
 	    (format out "    movq $123, %rax\n")
+	    (format out "    callq _scm_init\n")
+	    (format out "    popq %rbp\n")
 	    (format out "    retq\n")
 	    )))))
 
