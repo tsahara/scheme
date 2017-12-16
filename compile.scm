@@ -155,6 +155,9 @@
   )
 
 (define (compile-expression exp regs)
+  (define (newreg)
+    (registers-alloc regs))
+
   (case (car exp)
     ;; (if c t f)
     ((if) (let ((tb-cond  (compile-expression c))
@@ -170,8 +173,11 @@
 	    (label l2)
 	    ))
 
+    ;; 123
+    `(fixnum (newreg) ,exp)
+
     ;; (proc a b c ...)
-    (else (values `(add ,(registers-alloc regs) 1 2)))))
+    (else (values `(add ,(newreg) 1 2)))))
 
 (define (compile-integer-expression)
   (format out "movq $~d, %rax\n"
