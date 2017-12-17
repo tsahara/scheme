@@ -1,3 +1,9 @@
-(define (a)
-
+(define (codegen out label arity nregs)
+  (format out ".global ~a\n" label)
+  (format out "~a:\n" label)
+  (format out "    pushq %rbp\n")
+  (format out "    movq $123, %rax\n")
+  (format out "    callq _scm_init\n")
+  (format out "    popq %rbp\n")
+  (format out "    retq\n")
   )

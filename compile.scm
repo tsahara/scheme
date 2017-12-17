@@ -4,6 +4,8 @@
 (use srfi-60)
 (use srfi-117)
 
+(load "./codegen.scm")
+
 (define-class <scheme-program> ()
   ((next-procedure-id :init-value 0)
    ))
@@ -122,13 +124,7 @@
 		  (else
 		   (error "not a (define)")))
 
-	    (format out ".global _main\n")
-	    (format out "_main:\n")
-	    (format out "    pushq %rbp\n")
-	    (format out "    movq $123, %rax\n")
-	    (format out "    callq _scm_init\n")
-	    (format out "    popq %rbp\n")
-	    (format out "    retq\n")
+	    (codegen out "_main" #f #f)
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
@@ -172,9 +168,6 @@
 	    (tac-append-with-label tb-false l1)
 	    (label l2)
 	    ))
-
-    ;; 123
-    `(fixnum (newreg) ,exp)
 
     ;; (proc a b c ...)
     (else (values `(add ,(newreg) 1 2)))))
