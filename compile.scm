@@ -124,7 +124,7 @@
 		  (else
 		   (error "not a (define)")))
 
-	    (codegen out "_main" #f #f)
+	    (codegen out "_main" #f 1)
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
