@@ -1,3 +1,6 @@
+(define-class <register-descriptor>
+  )
+
 (define (codegen out label arity nregs)
   (format out ".global ~a\n" label)
   (format out "~a:\n" label)

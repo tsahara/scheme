@@ -6,8 +6,9 @@
 
 (load "./codegen.scm")
 
-(define-class <scheme-program> ()
+(define-class <program> ()
   ((next-procedure-id :init-value 0)
+   (global-variables  :init-form  '())
    ))
 
 
@@ -85,11 +86,12 @@
   (values (format #f "t~a" regs) (+ 1 regs)))
 
 ;;
-;; A Procedure in Compiler
+;; Procedure to be compiled
 ;;
 (define-class <compiler-procedure> ()
   ((asm-symbol :init-form (asm-gensym))
-   (tac-block  :init-form (make-list-queue '()))))
+   (tac-block  :init-form (make-list-queue '()))
+   (args       :init-value '())))
 
 (define (make-compiler-procedure)
   (make <compiler-procedure>))
@@ -98,8 +100,10 @@
   (slot-ref cproc 'asm-symbol))
 
 (define (cproc-add-tac cproc tac)
-
   )
+
+(define (cproc-arity cproc)
+  (length (slot-ref cproc 'args)))
 
 ;; Temporary Variable
 (define (temporary-variable-alloc vars)
@@ -115,16 +119,17 @@
       ;; XXX pass 1 to read all toplevel procedure definitions.
       (call-with-input-file scm-file
 	(lambda (in)
-	  (let ((prog (make <scheme-program>))
-		(cenv (make-cenv))
-		(exp  (read in)))
+	  (let ((prog     (make <program>))
+		(cenv     (make-cenv))
+		(exp      (read in))
+		(toplevel (make-compiler-procedure>)))
 	    (cond ((equal? (car exp) 'define)
 		   (compile-procedure out prog cenv exp))
 
 		  (else
 		   (error "not a (define)")))
 
-	    (codegen out "_main" #f 1)
+	    (codegen out "_main" toplevel #f 1)
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
