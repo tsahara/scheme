@@ -1,4 +1,5 @@
-(define-class <register-descriptor>
+(define-class <register-descriptor> ()
+  ()
   )
 
 (define (codegen out label arity nregs)

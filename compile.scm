@@ -15,6 +15,16 @@
 (define (integer->sval num)
   (ash num 3))
 
+;; Assembly File
+(define-class <assembly-file> ()
+  ((next-label-id :init-value 1)
+   ))
+
+(define-method genlabel ((asm <assembly-file>))
+  (let1 id (slot-ref asm 'next-label-id)
+    (slot-set! asm 'next-label-id (+ id 1))
+    (format #f "_s_~a" id)))
+
 ;;
 ;; Compile-time Environment
 ;;
@@ -122,7 +132,7 @@
 	  (let ((prog     (make <program>))
 		(cenv     (make-cenv))
 		(exp      (read in))
-		(toplevel (make-compiler-procedure>)))
+		(toplevel (make-compiler-procedure)))
 	    (cond ((equal? (car exp) 'define)
 		   (compile-procedure out prog cenv exp))
 
@@ -236,12 +246,12 @@
   (print "./a.out")
   (sys-exec "./a.out" '("./a.out")))
 
-(define (run-a-script scm-filename)
-  (let ((asm-filename (string-append (if (string-suffix? ".scm" scm-filename)
-					 (string-drop-right scm-filename 4)
-					 scm-filename)
+(define (run-a-script filename)
+  (let ((asm-filename (string-append (if (string-suffix? ".scm" filename)
+					 (string-drop-right filename 4)
+					 filename)
 				     ".s")))
-    (compile-scm-file scm-filename asm-filename)
+    (compile-scm-file filename asm-filename)
     #;(assemble-and-link asm-filename)
     #;(run-aout)))
 
