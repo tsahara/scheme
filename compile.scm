@@ -120,26 +120,26 @@
   )
 
 ;;
-;; Compiler Entry Point
+;; Compile a Scheme program into an assembly file.
 ;;
 (define (compile-scm-file scm-file asm-file)
   (format #t "compile: ~a => ~a\n" scm-file asm-file)
   (call-with-output-file asm-file
-    (lambda (out)
+    (lambda (outport)
       ;; XXX pass 1 to read all toplevel procedure definitions.
       (call-with-input-file scm-file
-	(lambda (in)
+	(lambda (inport)
 	  (let ((prog     (make <program>))
 		(cenv     (make-cenv))
-		(exp      (read in))
+		(exp      (read inport))
 		(toplevel (make-compiler-procedure)))
 	    (cond ((equal? (car exp) 'define)
-		   (compile-procedure out prog cenv exp))
+		   (compile-procedure outport prog cenv exp))
 
 		  (else
 		   (error "not a (define)")))
 
-	    (codegen out "_main" toplevel #f 1)
+	    (codegen outport "_main" toplevel #f 1)
 	    )))))
 
   (format #t "<<< ~a >>>\n" asm-file)
