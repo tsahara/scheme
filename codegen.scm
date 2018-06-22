@@ -17,3 +17,18 @@
   (format out "    popq %rbp\n")
   (format out "    retq\n")
   )
+
+(define a-icode
+  ; (print (+ 1 2))
+  '(proc sa_toplevel
+	 (fixnum r1 1)
+	 (fixnum r2 2)
+	 (add r3 r1 r2)
+	 (call _print r4 r3)
+	 (return r4)
+	 ))
+
+(define (codegen-a-icode icode)
+  )
+
+(codegen-a-icode a-icode)
