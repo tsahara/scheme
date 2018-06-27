@@ -1,24 +1,16 @@
 (use srfi-1)
 
-(define-class <register-descriptor> ()
+;; (define (regmap-alloc ireg) ...)
+;; (define (regmap-release mreg))
+;; (define (regmap-used-registers regmap))
+
+(define-class <register-map> ()
   ()
   )
 
-(define (codegen out label arity nregs)
-  (format out ".global ~a\n" label)
-  (format out "~a:\n" label)
-  (format out "    pushq %rbp\n")
-  (if (> nregs 0)
-      (format out "    subq $~a, %rbp\n" (* nregs 8)))
-
-  (format out "    movq $123, %rax\n")
-  (format out "    callq _scm_init\n")
-
-  (if (> nregs 0)
-      (format out "    addq $~a, %rbp\n" (* nregs 8)))
-  (format out "    popq %rbp\n")
-  (format out "    retq\n")
-  )
+(define (make-register-map)
+  (let1 regmap (make <register-map>)
+      ))
 
 (define a-icode
   ; (print (+ 1 2))
@@ -37,11 +29,6 @@
     ((r3) "%r9")
     ((r4) "%r8")
     (else (error "xxx: reg-get"))))
-
-;; register-map
-;; (define (regmap-alloc ireg) ...)
-;; (define (regmap-release mreg))
-;; (define (regmap-used-registers regmap))
 
 ;; prologue: save registers, make stack frame
 ;; body: main
